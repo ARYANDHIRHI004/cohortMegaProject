@@ -5,7 +5,9 @@ export const UserRolesEnum = {
 }
 export const AvailableUserRoles = Object.values(UserRolesEnum)
 
-export const todoStatus = {
-
+export const todoStatusEum = {
+    TODO: "todo",
+    IN_PROGRESS: "in_progress",
+    DONE:"done",
 }
-
+export const AvailableTodoStatus = Object.values(todoStatusEum)

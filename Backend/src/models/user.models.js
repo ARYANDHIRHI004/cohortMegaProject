@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        lowecase: true,
+        lowercase: true,
         trim: true,
         index: true
     },
@@ -77,7 +77,7 @@ userSchema.methods.comparePassword = async function(password){
     return isMatched
 }
 
-userSchema.models.accessToken = function(){
+userSchema.models.generateAccessToken = function(){
     return jwt.sign({
         _id: this._id,
         email: this.email
@@ -88,7 +88,7 @@ userSchema.models.accessToken = function(){
     })
 }
 
-userSchema.models.refreshToken = function(){
+userSchema.models.generateRefreshToken = function(){
     return jwt.sign({
         _id: this._id,
     },

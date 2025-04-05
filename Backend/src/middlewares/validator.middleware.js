@@ -14,5 +14,5 @@ export const validator = (req, res, next) => {
         [err.path] : err.msg
     }))
 
-    throw new ApiError(402, "Recived data is not valid", extrectedErrors)
+    throw new ApiError(422, "Recived data is not valid", extrectedErrors)
 }

@@ -11,7 +11,7 @@ const userRegistrationVaidator = () => {
         .trim()
         .notEmpty().withMessage("Email is required")
         .isLength({min: 3}).withMessage("atleast 3 charactor is required")
-        .isLength({max: 13}).withMessage("cnanot exceed 13 charactor")
+        .isLength({max: 13}).withMessage("cannot exceed 13 charactor")
   ]
 }
 
