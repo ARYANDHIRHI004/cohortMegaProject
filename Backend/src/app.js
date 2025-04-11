@@ -3,6 +3,7 @@ import cors from "cors"
 import healthCheckRouter from "./routes/healthcheck.routes.js"
 import cookieParser from "cookie-parser"
 import dotenv from "dotenv"
+import userRouter from "./routes/auth.routes.js"
 
 dotenv.config({
     path: "./.env"
@@ -21,7 +22,8 @@ app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(cookieParser())
 
-app.use("/api/v1/healthCheck",healthCheckRouter)
 
+app.use("/api/v1/user",userRouter)
+app.use("/api/v1/healthCheck",healthCheckRouter)
 
 export default app

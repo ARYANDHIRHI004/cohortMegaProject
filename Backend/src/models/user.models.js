@@ -77,7 +77,7 @@ userSchema.methods.comparePassword = async function(password){
     return isMatched
 }
 
-userSchema.models.generateAccessToken = function(){
+userSchema.methods.generateAccessToken = function(){
     return jwt.sign({
         _id: this._id,
         email: this.email
@@ -88,7 +88,7 @@ userSchema.models.generateAccessToken = function(){
     })
 }
 
-userSchema.models.generateRefreshToken = function(){
+userSchema.methods.generateRefreshToken = function(){
     return jwt.sign({
         _id: this._id,
     },
@@ -98,7 +98,7 @@ userSchema.models.generateRefreshToken = function(){
     })
 }
 
-userSchema.models.generateTemproryToken = function(){
+userSchema.methods.generateTemproryToken = function(){
     const unHashedToken = crypto.randomBytes(32).toString('hex')
     const hashedToken = crypto
         .createHash("sha256")

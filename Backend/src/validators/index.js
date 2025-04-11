@@ -9,9 +9,13 @@ const userRegistrationVaidator = () => {
         
     body('username')
         .trim()
-        .notEmpty().withMessage("Email is required")
+        .notEmpty().withMessage("Username is required")
         .isLength({min: 3}).withMessage("atleast 3 charactor is required")
-        .isLength({max: 13}).withMessage("cannot exceed 13 charactor")
+        .isLength({max: 13}).withMessage("cannot exceed 13 charactor"),
+
+    body('password')
+        .notEmpty().withMessage("Password is required")
+        .isLength({min: 3}).withMessage("atleast 3 charactor is required")
   ]
 }
 
