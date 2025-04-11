@@ -4,6 +4,7 @@ import healthCheckRouter from "./routes/healthcheck.routes.js"
 import cookieParser from "cookie-parser"
 import dotenv from "dotenv"
 import userRouter from "./routes/auth.routes.js"
+import projectRouter from "./routes/project.routes.js"
 
 dotenv.config({
     path: "./.env"
@@ -25,5 +26,7 @@ app.use(cookieParser())
 
 app.use("/api/v1/user",userRouter)
 app.use("/api/v1/healthCheck",healthCheckRouter)
+
+app.use("/api/v1/projectRouter",projectRouter)
 
 export default app
