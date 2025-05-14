@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken"
 import { ApiError } from "../utils/ApiError.js";
 
-const verifyJWT = async (req, res, next) => {
+const verifyJWT = async (req, _ , next) => {
     try {
         const token = req.cookies?.accessToken
         console.log(token);
