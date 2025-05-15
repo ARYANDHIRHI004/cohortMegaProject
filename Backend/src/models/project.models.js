@@ -1,4 +1,4 @@
-import mongoose, { modelNames, Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const projectSchema = new mongoose.Schema({
     name:{

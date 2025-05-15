@@ -47,7 +47,7 @@ const getNoteById = asyncHandler(async (req, res) => {
 const createNote = asyncHandler(async (req, res) => {
   // create note
   const {content, projectId} = req.body
-  const {userId} = req.params
+  const {userId} = req.user._id
   
   if(!content){
     throw new ApiError(400,"content is required field")

@@ -1,3 +1,4 @@
+import { Subtask } from "../models/subtask.models.js";
 import { Task } from "../models/task.models.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -123,19 +124,74 @@ const deleteTask = asyncHandler(async (req, res) => {
 })
 
 // create subtask
-const createSubTask = async (req, res) => {
+const createSubTask = asyncHandler(async (req, res) => {
   // create subtask
-}
+  const {title, createdBy}  = req.body
+  const {taskId} = req.params
+
+  if(!title || !isCompleted || !createdBy){
+    throw new ApiError(400, "All field are required")
+  }
+
+  const createdSubTask = await Subtask.create({
+    title,
+    task: taskId,
+    createdBy
+  })
+
+  if(!createdSubTask){
+    throw new ApiError(500, "something went wrong while creating sub task")
+  }
+
+  return res.status(200).json(201, createdSubTask, "SubTask created successfully" )
+
+})
 
 // update subtask
-const updateSubTask = async (req, res) => {
-  // update subtask
-};
+const updateSubTask = asyncHandler(async (req, res) => {
+  // create subtask
+  const {title, createdBy}  = req.body
+  const {subTaskId} = req.params
+
+  if(!title || !createdBy){
+    throw new ApiError(400, "All field are required")
+  }
+
+  const updatedSubTask = await Subtask.findByIdAndUpdate(
+    subTaskId,
+    {
+      $set:{
+        title,
+        createdBy
+      }
+    },
+    {
+      new: true
+    }
+  )
+
+  if(!updatedSubTask){
+    throw new ApiError(500, "something went wrong while updating sub task")
+  }
+
+  return res.status(200).json(201, updatedSubTask, "SubTask updated successfully" )
+
+})
 
 // delete subtask
-const deleteSubTask = async (req, res) => {
-  // delete subtask
-};
+const deleteSubTask = asyncHandler(async (req, res) => {
+  // create subtask
+  const {subTaskId} = req.params
+
+  const deletedSubTask = await Subtask.findByIdAndDelete(subTaskId)
+
+  if(!deletedSubTask){
+    throw new ApiError(500, "deletion get failed!!")
+  }
+
+  return res.status(200).json(201, "SubTask deleted successfully" )
+
+})
   
   export {
     createSubTask,

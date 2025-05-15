@@ -83,8 +83,9 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new ApiError(401, "User does not exist");
     }
 
-    const isPasswordCorrect = user.comparePassword(password)
+    const isPasswordCorrect = await user.comparePassword(password)
 
+    
     if(!isPasswordCorrect){
         throw new ApiError(401, "Invalid Credentials")
     }
@@ -267,8 +268,18 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 })
 
 const getCurrentUser = asyncHandler(async (req, res) => {
+    const {userId} = req.user._id 
     
-    
+    const user = await User.findById(userId).select("-password -accessTokee -refreshToken")
+
+    if(!user){
+        throw new ApiError(400, "User not found")
+    }
+
+    return res.status(200).json(
+        new ApiResponse(201, user, "Current user find successfully")
+    )
+
 })
 
 
@@ -281,7 +292,8 @@ export {
     resendVerifyEmail,
     refreshAccessToken,
     forgotPasswordRequest,
-    changeCurrentPassword
+    changeCurrentPassword,
+    getCurrentUser,
 }
 
 

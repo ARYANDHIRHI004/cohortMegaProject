@@ -3,14 +3,24 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ProjectMember } from "../models/projectmember.models.js";
+import { User } from "../models/user.models.js";
+
 
 const getProjects = asyncHandler(async (req, res) => {
     const id = req.user?._id
-    const projects = await Project.find({
-        createdBY: id
+    let projects = []
+
+    const projectMember = await ProjectMember.find({
+        user: id
     }) 
-    if(!projects){
+
+    if(!projectMember){
         throw new ApiError(400, "projects not found")
+    }
+    
+    for (let i = 0; i < projectMember.length; i++) {
+        const project = await Project.findById(projectMember[i].project)       
+        projects.push(project)     
     }
 
     return res.status(200).json(
@@ -26,18 +36,15 @@ const getProjectsById = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Unauthorized request")
     }
 
-    const project = await Project.findById({projectId})
+    const project = await Project.findById(projectId)
 
     if(!project){
         throw new ApiError(401, "Project not exist")
     }
 
     return res.status(200).json(
-        new ApiResponse(201, "Project find", project)
-    )
-
-
-    
+        new ApiResponse(201, project, "Project find")
+    )   
 })
 
 const createProject = asyncHandler(async (req, res) => {
@@ -56,9 +63,15 @@ const createProject = asyncHandler(async (req, res) => {
     if(!project){
         throw new ApiError(500, "Project creation failed")
     }
+
+    await ProjectMember.create({
+        user: req.user?._id,
+        project: project?._id,
+        role: "project_admin"
+    })
         
     return res.status(200).json(
-        new ApiResponse(201, "Project created successfully")
+        new ApiResponse(201, project, "Project created successfully")
     )
 })
 
@@ -82,6 +95,7 @@ const updateProject = asyncHandler(async (req, res) => {
             new: true
         }
     )
+
     return res.status(200).json(
         new ApiResponse(201, updatedProject, "project updated successfully")
     )
@@ -95,6 +109,10 @@ const deleteProject = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Project not found!!")
     }
 
+    await ProjectMember.deleteMany({
+        project: projectId
+    })
+
     const deletedProject =await Project.findByIdAndDelete(projectId)
 
     if (!deletedProject) {
@@ -104,14 +122,32 @@ const deleteProject = asyncHandler(async (req, res) => {
     return res.status(200).json(
         new ApiResponse(201, "Project deleted successfully")
     )
-    
+
 })
 
 const addMemberToProject = asyncHandler(async (req, res) => {
-    const {projectId, memberId} = req.params
+
+    const {projectId} = req.params
+    const {memberId} = req.body
+   
 
     if(!memberId || !projectId){
         throw new ApiError(400, "all fields are required")
+    }
+
+    const addedMember = await ProjectMember.findOne({
+        user: memberId,
+        project: projectId
+    })
+
+    if(addedMember){
+        throw new ApiError(400, "User is alreay a member")
+    }
+
+    const existedUser = await User.findById(memberId)
+
+    if(!existedUser){
+        throw new ApiError(400, "User does not exist")
     }
 
     const memberAdded = await ProjectMember.create({
@@ -131,15 +167,17 @@ const addMemberToProject = asyncHandler(async (req, res) => {
 })
 
 const deleteMemberToProject = asyncHandler(async (req, res) => {
-    const {userId, projectId} = req.params
+    const {projectId} = req.params
+    const {memberId} = req.body
+   
 
-    if(!userId || !projectId){
+    if(!memberId || !projectId){
         throw new ApiError(400, "projecti or user not found")
     }
 
-    const deletedMember = await ProjectMember.findByIdAndDelete({
-        userId,
-        projectId
+    const deletedMember = await ProjectMember.deleteOne({
+        user: memberId,
+        project: projectId
     })
 
     if(!deletedMember){
@@ -184,27 +222,6 @@ const updateMemberRole = asyncHandler(async (req, res) => {
     
 })
 
-const deleteMember = asyncHandler(async (req, res) => {
-    const {userId} = req.params
-
-    if(!userId){
-        throw new ApiError(400, "user not found")
-    }
-
-    const deletedMember = await ProjectMember.findByIdAndDelete({
-        userId,
-    })
-
-    if(!deletedMember){
-        throw new ApiError(500, "member deletion failed")
-    }
-
-    return res.status(200).json(
-        new ApiResponse(201, "Member deleted successfully")
-    )
-
-    
-})
 
 
 
@@ -217,6 +234,5 @@ export {
     addMemberToProject,
     deleteMemberToProject,
     getMembersToProject,
-    deleteMember,
 
 }
